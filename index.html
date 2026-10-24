@@ -1,291 +1,183 @@
 <!DOCTYPE html>
-<html lang="de"><head><meta charset="utf-8">
+<html lang="de">
+<head>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#efece3"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><title>Pilzkarte Schweiz</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+<title>Hier & jetzt</title>
 <style>
-html,body{height:100%;margin:0;overflow:hidden;font:15px/1.4 system-ui,sans-serif;background:var(--bg,#efece3)}
-.leaflet-container{background:var(--bg,#efece3)}
-html{--ext:0px}
-html.lb body{position:fixed;top:0;left:0;right:0;bottom:0;height:auto}html.lb #map{position:absolute;top:0;left:0;right:0;bottom:calc(-1*var(--ext))}
-html.lc,html.lc body{height:auto;min-height:100%;overflow:visible}html.lc #map{position:absolute;top:0;left:0;width:100%;height:calc(100vh + var(--ext))}
-html.ld #map{transform:translate3d(0,0,0);-webkit-transform:translate3d(0,0,0)}
-#map{position:fixed;top:0;left:0;right:0;bottom:calc(-1*var(--ext))}
-.leaflet-bottom{margin-bottom:env(safe-area-inset-bottom,0px)}
-body:before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top);background:linear-gradient(#0005,#0000);z-index:1050;pointer-events:none}
-select,button{font:inherit;padding:8px 10px;border-radius:10px;border:1px solid #c9c6b8;background:#f6f4ee;color:#22301c;margin:2px 0}
-.ib{width:46px;height:46px;border-radius:50%;border:0;background:#fff;box-shadow:0 1px 6px #0003;padding:0;display:flex;align-items:center;justify-content:center}
-.ib svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.ib.s{width:34px;height:34px;box-shadow:none;background:#f0eee6}.ib.s svg{width:18px;height:18px}
-#tb{position:fixed;top:calc(env(safe-area-inset-top) + 12px);right:12px;z-index:1100;display:flex;flex-direction:column;gap:10px}
-#hm{position:fixed;top:calc(env(safe-area-inset-top) + 12px);left:12px;max-width:calc(100vw - 84px);z-index:1100;background:#fff;color:#22301c;border-radius:14px;padding:7px 11px;font-size:.8rem;box-shadow:0 1px 6px #0003}
-#hm:empty{display:none}
-.sh{position:fixed;left:0;right:0;bottom:calc(-1*var(--ext));z-index:1500;max-height:46%;overflow:auto;background:#fff;color:#22301c;border-radius:18px 18px 0 0;box-shadow:0 -2px 14px #0003;padding:0 16px calc(32px + env(safe-area-inset-bottom) + var(--ext));box-sizing:border-box}
-.sh.big{max-height:88%}
-.sh header{position:sticky;top:0;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:16px 0 8px;font-weight:600;cursor:pointer}
-.sh header:before{content:"";position:absolute;top:6px;left:50%;width:38px;height:4px;margin-left:-19px;border-radius:2px;background:#d5d2c6}
-.sh header span:last-child{display:flex;gap:8px}
-.sh select{width:100%}
-label{display:block;margin:10px 0 2px;font-size:.85rem;color:#667060}label.ck{display:flex;align-items:center;gap:10px;margin:14px 0;font-size:.95rem;color:#22301c}
-.r{display:flex;justify-content:space-between;font-weight:600;margin-top:8px}
-.b{height:8px;background:#ddd;border-radius:4px;overflow:hidden}.b i{display:block;height:100%;background:#4f7a2e}
-small{color:#667060}a{color:#4f7a2e}
-table{border-collapse:collapse;width:100%;margin:6px 0;text-align:center;font-size:.8rem}td,th{padding:3px 2px;border:1px solid #fff}td:first-child{text-align:left;white-space:nowrap}tr.on td:first-child{font-weight:700}tr.on td{outline:2px solid #22301c;outline-offset:-2px}
-#info,.ov{position:fixed;inset:0;bottom:calc(-1*var(--ext));z-index:2000;background:#fff;color:#22301c;overflow:auto;padding:12px 16px calc(24px + env(safe-area-inset-bottom) + var(--ext))}
-[hidden]{display:none!important}h2,h3{margin:.9em 0 .2em}li{margin:2px 0}.hm{image-rendering:pixelated}
-</style></head><body>
-<div id="map"></div><div id="hm"></div>
-<div id="tb"><button class="ib" id="loc" title="Mein Standort" aria-label="Mein Standort"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button><button class="ib" id="tg" title="Gute Gebiete" aria-label="Gute Gebiete"><svg viewBox="0 0 24 24"><path d="M3 3h18v18H3zM3 9h18M3 15h18M9 3v18M15 3v18"/></svg></button><button class="ib" id="bs" title="Beste Stellen" aria-label="Beste Stellen"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11a7 7 0 0114 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></button><button class="ib" id="lg" title="Fundlog" aria-label="Fundlog"><svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3zM5 17a3 3 0 013-3h11"/></svg></button><button class="ib" id="ts" title="Einstellungen" aria-label="Einstellungen"><svg viewBox="0 0 24 24"><path d="M4 6h8M16 6h4M4 12h2M10 12h10M4 18h10M18 18h2"/><circle cx="14" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="18" r="2"/></svg></button><button class="ib" id="inf" title="Bedingungen" aria-label="Bedingungen"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg></button></div>
-<section id="panel" class="sh" hidden><header><span>Pilze am Standort</span><span><button id="vg" class="ib s" title="Verlauf" aria-label="Verlauf"><svg viewBox="0 0 24 24"><path d="M4 20V4M4 20h16M8 15l4-4 3 3 5-6"/></svg></button><button id="pc" class="ib s" title="Schliessen" aria-label="Schliessen"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></span></header><div id="out"></div><div id="cht"></div></section>
-<section id="set" class="sh" hidden><header><span>Einstellungen</span><span><button id="sc" class="ib s" title="Schliessen" aria-label="Schliessen"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></span></header>
-<label for="hb">Lebensraum / Baumart</label><select id="hb"></select>
-<label for="fc">Bodenart</label><select id="fc"><option value=".34" selected>lehmig</option><option value=".27">mittel</option><option value=".20">sandig</option></select>
-<label class="ck"><input type="checkbox" id="ex" checked> Exposition und Hang einrechnen</label>
-<label class="ck"><input type="checkbox" id="wl"> Waldkarte (BAFU) einblenden</label>
-<label class="ck"><input type="checkbox" id="mi" checked> Mikroklima: Moore und Gewässer einrechnen (Annahmen)</label>
-<label class="ck"><input type="checkbox" id="mo"> Moore (BAFU-Inventar) einblenden</label>
-<small>Gilt für Standort-Info, Gebiete und Beste Stellen.</small>
-<label for="ex2">Unterer Rand: Kartenhöhe (bei Streifen unten der Reihe nach probieren)</label><select id="ex2"><option value="auto">Automatisch</option><option value="bottom">Standard (Rand unten)</option><option value="lvh">Grosse Höhe (lvh)</option><option value="fill">Verfügbare Höhe (fill-available)</option><option value="screen">Bildschirmhöhe</option><option value="p60">Fenster + 60 px</option></select>
-<label for="lay">Layout-Technik (Test)</label><select id="lay"><option value="a">A: Standard</option><option value="b">B: Seite fest verankert</option><option value="c">C: Normaler Fluss</option><option value="d">D: Eigene Grafikebene</option></select>
-<label for="bgc">Farbe des Randes</label><select id="bgc"><option value="#efece3">Beige</option><option value="#ffffff">Weiss</option><option value="#4f7a2e">Grün</option><option value="#c0392b">Rot (Test)</option></select>
-<p><small id="dbg"></small></p></section>
-<section id="gb" class="sh" hidden><header><span>Gute Gebiete</span><span><button id="gc" class="ib s" title="Schliessen" aria-label="Schliessen"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></span></header>
-<label for="hs">Art</label><select id="hs"></select><label for="hd">Tag</label><select id="hd"></select>
-<p><button id="hg">Karte berechnen</button> <button id="hc">Leeren</button></p>
-<small>Rechnet den sichtbaren Ausschnitt (ab Zoom 9, am feinsten ab 11). Dunkelgrün = bessere Bedingungen. Tippe danach auf einen Punkt für Details.</small></section>
-<div id="flog" class="ov" hidden><button id="lc">✕ Schliessen</button><div id="fb"></div></div><div id="best" class="ov" hidden><button id="bc">✕ Schliessen</button><div id="bb"></div></div>
-<div id="info" hidden><button id="cl">✕ Schliessen</button><div id="ib"></div></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  :root {
+    --bg: #eef1ec; --panel: #ffffff; --ink: #1d2a24; --muted: #66756c;
+    --line: #cfd8d0; --north: #d9381e; --accent: #2f6b4f;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #101713; --panel: #18211b; --ink: #e7efe9; --muted: #8fa196;
+      --line: #2c3a31; --north: #ff6a4d; --accent: #7fcf9f;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif; }
+  body { min-height: 100vh; padding: max(20px, env(safe-area-inset-top)) 20px max(20px, env(safe-area-inset-bottom));
+    display: flex; flex-direction: column; align-items: center; gap: 18px; }
+  main { width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 18px; }
+  h1 { font-size: 1rem; font-weight: 600; color: var(--muted); margin: 0; }
+  .compass { background: var(--panel); border: 1px solid var(--line); border-radius: 50%;
+    width: min(78vw, 340px); aspect-ratio: 1; margin: 0 auto; position: relative; }
+  .compass svg { width: 100%; height: 100%; display: block; }
+  #dial { transition: transform .12s linear; transform-origin: 50% 50%; }
+  .heading { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; pointer-events: none; }
+  .heading b { font-size: 2.6rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .heading span { color: var(--muted); font-size: 1rem; }
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+  .stat b { display: block; font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stat span { color: var(--muted); font-size: .9rem; }
+  .stat small { display: block; margin-top: 4px; color: var(--muted); font-size: .78rem; min-height: 1em; }
+  button { font: inherit; font-weight: 600; padding: 12px 18px; border-radius: 12px; border: 0;
+    background: var(--accent); color: var(--bg); cursor: pointer; }
+  button:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+  #msg { text-align: center; color: var(--muted); font-size: .9rem; min-height: 1.3em; margin: 0; }
+  .row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<main>
+  <h1 id="place">Standort wird gesucht …</h1>
+
+  <div class="compass">
+    <svg viewBox="-100 -100 200 200" aria-hidden="true">
+      <g id="dial">
+        <g stroke="var(--line)" stroke-width="1">
+          <script>/* Ticks werden unten per JS erzeugt */</script>
+        </g>
+        <g id="ticks"></g>
+        <polygon points="0,-72 8,-48 -8,-48" fill="var(--north)"/>
+        <text x="0" y="-78" text-anchor="middle" font-size="14" font-weight="700" fill="var(--north)">N</text>
+        <text x="80" y="5" text-anchor="middle" font-size="12" fill="var(--muted)">O</text>
+        <text x="0" y="90" text-anchor="middle" font-size="12" fill="var(--muted)">S</text>
+        <text x="-80" y="5" text-anchor="middle" font-size="12" fill="var(--muted)">W</text>
+      </g>
+      <polygon points="0,-96 4,-88 -4,-88" fill="var(--ink)"/>
+    </svg>
+    <div class="heading"><b id="deg">–</b><span id="dir">Kompass aus</span></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><span>Höhe über Meer</span><b id="alt">–</b><small id="altsub"></small></div>
+    <div class="stat"><span>Temperatur</span><b id="temp">–</b><small id="tempsub"></small></div>
+  </div>
+
+  <div class="row">
+    <button id="compassBtn" type="button">Kompass starten</button>
+    <button id="refreshBtn" type="button">Standort aktualisieren</button>
+  </div>
+  <p id="msg"></p>
+</main>
+
 <script>
-window.addEventListener("error",function(e){var x=document.getElementById("hm");if(x)x.textContent="Fehler: "+(e.message||"Skript")+(e.lineno?" (Zeile "+e.lineno+")":"")});
-//LOGIC
-var H=["Fichte","Tanne","Buche","Eiche","Kiefer/Föhre","Lärche","Birke","Ahorn/Esche/Laubmisch","Erle/Auwald","Wiese/Waldrand/Obstgarten","Nadelwald (gemischt)","Laubwald (gemischt)","Mischwald"];
-function hw(s,i){if(i<10)return s.h[i];var g=i==10?[0,1,4]:i==11?[2,3,6,7]:[0,1,2,3,4,6,7];return avg(g.map(function(j){return s.h[j]}))}
-// Baumgewichte nach Sporensuche (Steinpilz exakt; andere Arten: voll=1, halb=.5, kaum=.1, nein=0)
-var S=[
-{n:"Steinpilz",k:"Stein",x:"Verwechslung: Gallenröhrling (rosa Röhren, dunkles grobes Stielnetz, sehr bitter). Röhrlinge mit roten Poren oder blau anlaufendem Fleisch sind keine Steinpilze.",h:[1,.6,.95,.85,.8,.2,.5,.35,0,0],rain:25,mode:"net",t:[12,15],tw:7,m1:[60,115],m2:[55,115],s:[6,8,11,12],a:[250,500,1700,2200]},
-{n:"Pfifferling",k:"Pfiff.",h:[1,.5,1,1,1,.1,.5,.1,0,0],rain:25,mode:"bal",t:[12,20],tw:7,m1:[65,115],m2:[60,115],s:[6,7,11,12],a:[250,500,1600,2000]},
-{n:"Marone",k:"Maron.",h:[1,.5,.5,.1,1,.1,.1,.1,0,0],rain:20,mode:"net",t:[9,15],tw:7,m1:[55,115],m2:[50,115],s:[7,9,11,12],a:[250,400,1300,1800]},
-{n:"Morchel",k:"Morch.",h:[.1,.1,.1,.5,.1,.1,.1,1,.8,.6],rain:15,mode:"net",t:[8,16],tw:14,m1:[60,120],m2:null,s:[3,4,6,6],a:[250,350,1300,1800]},
-{n:"Parasol",k:"Para.",h:[.5,.5,.5,1,1,1,1,.5,.1,.6],rain:22,mode:"net",t:[13,19],tw:7,m1:[55,115],m2:[50,115],s:[6,9,11,12],a:[250,350,1300,1800]}];
-var MICRO=true,EXPO=true,DN=["N","NO","O","SO","S","SW","W","NW"];function dn(a){return DN[Math.round(a/45)%8]}
-function sla(n,e,s,w,dx,dy){var gx=(e-w)/(2*dx),gy=(n-s)/(2*dy);return{sl:Math.atan(Math.sqrt(gx*gx+gy*gy))*180/Math.PI,as:(Math.atan2(-gx,-gy)*180/Math.PI+360)%360}}
-function lerp(p,x){if(x<=p[0][0])return p[0][1];for(var i=1;i<p.length;i++)if(x<=p[i][0])return p[i-1][1]+(p[i][1]-p[i-1][1])*(x-p[i-1][0])/(p[i][0]-p[i-1][0]);return p[p.length-1][1]}
-function avg(a){a=a.filter(function(v){return v!=null&&!isNaN(v)});return a.reduce(function(s,v){return s+v},0)/a.length}
-function trap(x,p){return x<=p[0]||x>=p[3]?0:x<p[1]?(x-p[0])/(p[1]-p[0]):x<=p[2]?1:(p[3]-x)/(p[3]-p[2])}
-function season(x,p){if(x<=p[0]||x>=p[3])return 0;return Math.max(.15,trap(x,p))}
-function fromApi0(d,t){
- var q=d.daily,h=d.hourly,ti=14+t,E=ti*24;
- var P=function(k){return q.precipitation_sum[ti-k]||0},ET=function(k){return q.et0_fao_evapotranspiration[ti-k]||0};
- var net=0,bal=0,rd=0,k;for(k=4;k<=14;k++)net+=Math.max(0,P(k)-.5*ET(k));
- for(k=1;k<=14;k++){bal+=P(k)-.5*ET(k);if(P(k)>=1)rd++}
- var sl=function(a,x,y){return a.slice(E-x,E-y)},soil=function(days){var c=days*24;return(avg(sl(h.soil_temperature_6cm,c,0))+avg(sl(h.soil_temperature_18cm,c,0)))/2};
- var tmin=[],tmax=[];for(k=1;k<=7;k++){tmin.push(q.temperature_2m_min[ti-k]);tmax.push(q.temperature_2m_max[ti-k])}
- return{net:net,bal:bal,t7:soil(7),t14:soil(14),m1:avg(sl(h.soil_moisture_3_to_9cm,72,0)),m2:avg(sl(h.soil_moisture_9_to_27cm,72,0)),
-  tmin:Math.min.apply(null,tmin.filter(function(v){return v!=null})),tmax:avg(tmax),
-  rd:rd,tm20:d.tm&&d.tm.length>=45+t?avg(d.tm.slice(25+t,45+t)):NaN,p26:d.pd&&d.pd.length>=45+t?d.pd.slice(19+t,45+t).reduce(function(s,v){return s+(v||0)},0):NaN,tmin14:d.tn&&d.tn.length>=45+t?Math.min.apply(null,d.tn.slice(31+t,45+t).filter(function(v){return v!=null})):NaN,snow:Math.max.apply(null,sl(h.snow_depth,24,0).map(function(v){return(v||0)*100})),vpd:avg(sl(h.vapour_pressure_deficit,48,0)),alt:d.elevation}}
-function fromApi(d,t){var w=fromApi0(d,t);if(d.el!=null&&isFinite(d.elevation)){var z=d.el-d.elevation;if(z){var dT=-.0065*z;w.t7+=dT;w.t14+=dT;w.tmin+=dT;w.tmax+=dT;if(isFinite(w.tmin14))w.tmin14+=dT;if(isFinite(w.tm20))w.tm20+=dT}w.alt=d.el}return w}
-function score(w,hab,fc,m,day){
- var x=m+(day-1)/31,sf=1,wetp=0;
- if(MICRO&&(w.moor>0||w.wat>0)){var mo=Math.min(1,(w.moor||0)*3),wa=Math.min(1,(w.wat||0)*4);wetp=mo;w=Object.assign({},w,{tmin:w.tmin-2*mo+1.5*wa,tmin14:w.tmin14-2*mo+1.5*wa,vpd:w.vpd*(1-.25*wa)})}
- if(EXPO&&w.sl!=null){var nn=Math.cos(w.as*Math.PI/180),st=Math.min(1,w.sl/25);w=Object.assign({},w,{m1:w.m1*(1+.12*nn*st),m2:w.m2*(1+.12*nn*st),t7:w.t7-nn*st,t14:w.t14-nn*st});sf=lerp([[25,1],[40,.6],[55,.3]],w.sl)}
- var fr=w.tmin<-4?.25:w.tmin<-1?.6:w.tmin<1?.85:1,he=w.tmax>30?.6:w.tmax>27?.85:1;
- var env=fr*he*lerp([[1,1],[5,.5],[15,.15]],w.snow)*lerp([[.6,1],[1.6,.5]],w.vpd);
- return S.map(function(s){
-  var r=lerp([[2,0],[.32*s.rain,.4],[s.rain,1]],s.mode=="bal"?w.bal:w.net);
-  var t=s.t,T=lerp([[t[0]-8,0],[t[0]-4,.35],[t[0]-2,.85],[t[0],1],[t[1],1],[t[1]+2,.75],[t[1]+5,.4],[t[1]+9,0]],s.tw==14?w.t14:w.t7);
-  var mf=function(v,b){return lerp([[b[0]-35,0],[b[0],1],[b[1],1],[b[1]+25,0]],v/fc*100)};
-  var M=s.m2?(mf(w.m1,s.m1)+mf(w.m2,s.m2))/2:mf(w.m1,s.m1);
-  var q=[r,T,M],r26=null,rdf=null,t20=null;if(isFinite(w.p26))r26=Math.max(0,Math.min(1,w.p26/104));if(isFinite(w.rd)){rdf=lerp([[0,.25],[2,.55],[5,1]],w.rd);q.push(rdf)}if(s.n=="Steinpilz"&&isFinite(w.tm20)){t20=lerp([[5,0],[10,.4],[12,.9],[13.2,1],[15,.9],[17,.4],[19,.1],[22,0]],w.tm20);q.push(t20)}var wx=(avg(q)+Math.exp(avg(q.map(function(v){return Math.log(Math.max(v,.001))}))))/2;if(r26!=null)wx*=.25+.75*r26;
-  var A=trap(w.alt,s.a),Hb=hw(s,hab)*(s.n=="Steinpilz"?1-.5*wetp:1),Se=season(x+(s.s[0]>=6?1:-1)*20*Math.max(0,Math.min(1,(w.alt-300)/1700))/31,s.s),hard=isFinite(w.tmin14)&&w.tmin14<=-4&&s.s[0]>=6,e=hard?env*Math.min(1,.3/fr):env;
-  var F=[["Lebensraum",Hb],["Höhe",A],["Saison",Se],["Regen",r],["Bodentemperatur",T],["Bodenfeuchte",M],["Frost/Hitze/Schnee/Trockenheit",e],["Hangneigung",sf],["Regen 26 Tage",r26==null?1:r26],["Regentage",rdf==null?1:rdf],["20-Tage-Temperatur",t20==null?1:t20]];
-  var mn=F.reduce(function(a,b){return b[1]<a[1]?b:a});
-  return{n:s.n,sc:Math.round(100*Hb*A*wx*e*Se*sf),weak:mn[0],min:mn[1],f:{r:r,T:T,M:M,wx:wx,r26:r26,rdf:rdf,t20:t20}}
- })}
-//ENDLOGIC
-var $=function(i){return document.getElementById(i)};
-H.forEach(function(h,i){$("hb").add(new Option(h,i))});
-var MN=["Jan","Feb","Mär","Apr","Mai","Jun","Jul","Aug","Sep","Okt","Nov","Dez"],f1=function(x){return String(x).replace(".",",")};
-function mr(a,b){return MN[a-1]+"–"+MN[b-1]}
-function infoHtml(){
- return '<h2>So wird gerechnet</h2><p>Wert = Lebensraum × Höhe × Wetter × Saison × Abschläge. Das Wetter mischt Nettoregen, Bodentemperatur und Bodenfeuchte (halb Mittelwert, halb geometrisches Mittel). Pilze zeigen sich etwa 1 bis 2 Wochen nach kräftigem Regen, darum zählt der Regen der Tage 4 bis 14 vor dem Tag.</p><p><b>Abschläge:</b> Frost in den letzten 7 Tagen (Tmin unter 1 °C ×0,85, unter −1 °C ×0,6, unter −4 °C ×0,25) · Hitze (Ø Tmax über 27 °C ×0,85, über 30 °C ×0,6) · Schnee (ab 5 cm ×0,5, ab 15 cm ×0,15) · trockene Luft (Ø der letzten 48 h, Dampfdruckdefizit über 0,6 kPa, bis ×0,5).</p>'+
- S.map(function(s){
-  var tr=H.map(function(x,i){return[x,s.h[i]]}).filter(function(x){return x[1]>=.5}).sort(function(a,b){return b[1]-a[1]}).map(function(x){return x[0]+" ("+f1(x[1])+")"}).join(", ");
-  return '<h3>'+s.n+'</h3><ul><li>Saison: möglich '+mr(Math.floor(s.s[0]),Math.ceil(s.s[3])-1)+', Hauptzeit '+mr(s.s[1],s.s[2]-1)+'</li><li>Höhe: ideal '+s.a[1]+'–'+s.a[2]+' m (möglich '+s.a[0]+'–'+s.a[3]+' m)</li><li>Bodentemperatur (6/18 cm, '+(s.tw==14?'14-Tage':'Wochen')+'-Mittel): ideal '+s.t[0]+'–'+s.t[1]+' °C</li><li>'+(s.mode=="bal"?'Wasserbilanz der letzten 14 Tage':'Nettoregen der Tage 4–14')+': ab '+s.rain+' mm voll</li><li>Bodenfeuchte: ideal '+s.m1[0]+'–'+s.m1[1]+' % nFK (3–9 cm)'+(s.m2?', '+s.m2[0]+'–'+s.m2[1]+' % (9–27 cm)':'')+'</li><li>Bäume/Lebensraum (Gewicht): '+tr+'</li>'+(s.x?'<li>'+s.x+'</li>':'')+'</ul>'}).join("")+
- '<h2>Gut zu wissen</h2><ul><li>Baumgewichte: Steinpilz nach Sporensuche, übrige Arten gestuft (1 / 0,5 / 0,1). Höhenfaktor und Kurvenflanken sind Näherungen.</li><li>Schwellen stammen aus Deutschland (Sporensuche) und sind für die Schweiz nicht geprüft. Die Höhe verschiebt die Saison um bis zu 30 Tage (im Herbst früher in höheren Lagen, später im Frühling, Andrew et al. 2018, Ecology). Eingerechnet ist das mit höchstens 20 Tagen bei 2000 m, linear ab 300 m (die Obergrenze ist belegt, die Verteilung auf die Höhe ist meine Annahme).</li><li>Prognose: Regen und Temperatur kommen wenn möglich vom MeteoSchweiz-Modell ICON (1–2 km, bis etwa 5 Tage), alles andere vom Standardmodell. Über 5 Tage hinaus bleibt jede Prognose unsicher.</li><li>Frost: Fachleute der VAPKO sagen, mit dem ersten richtigen Frost sei die Saison schlagartig beendet. Leichter Frost knapp unter 0 °C beendet sie nicht pauschal, er mindert den Wert nach den Stufen von Sporensuche. Nach hartem Frost (Tmin ≤ −4 °C) in den letzten 14 Tagen bleibt für Sommer- und Herbstarten höchstens 30 % des Werts (meine Annahme, die Morchel ist ausgenommen). In der Prognosetabelle steht bei Frost die Temperatur in Blau, bei hartem Frost «Saisonende?» in Rot.</li><li>Mikroklima (eigene Annahmen, nicht aus Studien): Moor im 1-km-Umkreis (nur die Bundesinventare der Hoch- und Flachmoore, nicht jedes Moor) bringt Kaltluft (bis −2 °C Tmin, plausibel, aber ohne Quelle). Für den Steinpilz kommt bis zu −50 % Lebensraumwert dazu, denn laut Sporensuche wächst er auf nassen, staunassen Böden kaum (die Richtung stammt aus dieser Quelle, die Stärke ist meine Annahme). Gewässer im Umkreis mildern Frost und machen die Luft feuchter, bis +1,5 °C Tmin und 25 % weniger Lufttrockenheit. Die Gewässer-Ebene (swissTLM3D) ist experimentell, ich konnte nicht prüfen, wie sie bei diesem Massstab zeichnet. Das Häkchen in den Einstellungen schaltet es ab.</li><li>Weitere Faktoren (Recherche): (1) 20-Tage-Lufttemperatur, nur für den Steinpilz: Das Optimum liegt laut dem Bielefelder Preprint bei 13,2 °C. Kurve: 0 bei 5 °C, 0,4 bei 10, 0,9 bei 12, 1 bei 13,2, 0,9 bei 15, 0,4 bei 17, 0,1 bei 19, 0 ab 22 °C. Belegt ist das Optimum und dass bei 5–10 °C im 20-Tage-Mittel fast nichts wächst, die übrigen Eckpunkte sind meine Annahme. (2) Regentage: Die VAPKO-Expertin nennt mehrere flächendeckende Regengüsse als nötig (SRF), Zahlen gibt es nicht. Ich zähle die Tage mit mindestens 1 mm in den letzten 14 Tagen: 0 Tage → 0,25, 2 → 0,55, ab 5 → 1 (Annahme). (3) Luftfeuchte und Nebel habe ich nicht eingebaut, weil ich dazu keine belastbaren Schwellen gefunden habe. Regentage und 20-Tage-Temperatur gehen in den Wettermix ein. Der 26-Tage-Regen wirkt als Multiplikator (0,25 bei 0 mm, linear bis 1 bei 104 mm), weil die Studie eine lineare Zunahme mit dem Regen fand; der Sockel von 0,25 steht dafür, dass Fruchtkörper auch bei wenig Regen vorkommen können (Annahme). Ein Wert von 100 verlangt jetzt, dass alle Teile voll sind, also zum Beispiel mindestens 104 mm Regen in 26 Tagen und mindestens 5 Regentage in 14 Tagen.</li><li>Bodenart: Standard ist «lehmig» (Feldkapazität 0,34, der Lehmwert von Sporensuche). «mittel» ist eine Zwischenstufe von mir und rechnet etwas grosszügiger.</li><li>Technik: Wetterantworten werden 10 Minuten pro Koordinatenpaar (auf 0,01° gerundet, etwa 1 km) zwischengespeichert, auch nach einem Neustart der App. Die Höhe eines angetippten Punkts kommt aus dem 90-m-Höhenmodell, nicht aus dem Wettermodell.</li><li>Regengedächtnis: Eine Auswertung von zehn Jahren Steinpilz-Beobachtungen in einem norddeutschen Buchenwald (Preprint, nicht begutachtet, ein Standort) erklärte die Fruchtbildung am besten mit dem Regen der letzten 26 Tage (lineare Zunahme, kein Höchstwert) und einer Lufttemperatur von rund 13 °C im 20-Tage-Mittel. Die meisten Fruchtkörper erschienen bei 2–4 mm Regen pro Tag. Im sehr trockenen Jahr 2016 gab es nur 4 Fruchtkörper, 2020 waren es 354. Darum zählt der 26-Tage-Regen jetzt zusätzlich (volle Wertung ab 104 mm, die Obergrenze ist meine Annahme). Für die übrigen Arten ist das eine Übertragung.</li><li>Trockener Sommer: Pilzfachleute (VAPKO, BUND) berichten, dass sich das Myzel nach langer Trockenheit erst erholen muss und einzelne Regentage oft nicht reichen, entscheidend ist gleichmässiger Regen über Wochen. Eine Zahl dafür gibt es nicht. Das Modell bildet es nur über den 26-Tage-Regen ab. Die VAPKO-Expertin nennt zusätzlich mehrere flächendeckende Regengüsse und feuchten Morgennebel als nötig; Nebel und Regenverteilung kennt die App nicht (SRF, 6.8.2026).</li><li>Exposition und Hangneigung (eigene Annahmen, nicht aus Studien): Nordhänge haben +12 % Bodenfeuchte und sind 1 °C kühler, Südhänge umgekehrt (voll ab 25° Neigung). Ab 25° Neigung sinkt der Wert (40° ×0,6, 55° ×0,3). Das Fundlog soll das später prüfen. Hang aus dem 90-m-Höhenmodell.</li><li>Nadel-, Laub- und Mischwald sind Mittelwerte der Baumgewichte. Die Waldkarte (BAFU Waldmischungsgrad, Datenstand laut Metadaten 2018) zeigt, was vor Ort überwiegt.</li><li>Gute Gebiete: Das Wetter wird an 10×10 Punkten abgefragt (die Wettermodelle lösen ohnehin nur etwa 1–2 km auf) und auf ein Raster von 40×40 Zellen interpoliert. Pro Zelle zählen die Höhe aus dem 90-m-Höhenmodell (Temperaturen werden mit 0,65 °C pro 100 m angepasst) und der Waldanteil aus der BAFU-Karte (ab 50 % Wald voller Wert). Exposition und Baumart fliessen nicht ein. Tippe in die Karte für die Details eines Punktes.</li><li>Die Bewertung bestimmt keine Pilze. Nimm nur mit, was du sicher kennst, und nutze eine Pilzkontrolle (<a href="https://www.vapko.ch" target="_blank">VAPKO</a>). Kantonale Regeln beachten: Laut SRF/VAPKO gilt z. B. in Zürich, Graubünden und Glarus ein Sammelverbot vom 1. bis 10. jeden Monats, andere Kantone haben andere Regeln (<a href=\"https://www.vapko.ch/index.php/de/oekologie/kantonale-und-kommunale-pilzsammelbestimmungen\" target=\"_blank\">Übersicht der VAPKO</a>).</li></ul><p><small>Quellen: BAFU Moorinventare, swisstopo swissTLM3D, Höhenmodell Copernicus GLO-90 via Open-Meteo · <a href="https://sporensuche.de/blog/wann-wachsen-pilze/" target="_blank">Sporensuche</a> · <a href="https://swissfungi.wsl.ch" target="_blank">SwissFungi</a> · Open-Meteo · © swisstopo</small></p>'}
-$("ib").innerHTML=infoHtml();$("inf").onclick=function(){$("info").hidden=false};$("cl").onclick=function(){$("info").hidden=true};
-var map=L.map("map",{zoomControl:false}).setView([46.8,8.2],8),mk=null,ci=null,DS=null,R=null,sel=0;
-var TL=L.tileLayer("https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg",{maxZoom:18,attribution:"© swisstopo"}).addTo(map),tErr=0,tOk=0;
-TL.on("tileerror",function(){tErr++;if(tErr==6&&!tOk)$("hm").textContent="Karte: Kacheln laden nicht (swisstopo oder Netz)"});TL.on("tileload",function(){tOk=1});
-function fit(){map.invalidateSize()}["load","resize","orientationchange"].forEach(function(e){window.addEventListener(e,fit)});setTimeout(fit,300);setTimeout(fit,1200);
-function compute(){
- R=[];for(var t=0;t<=7;t++){var dt=new Date();dt.setDate(dt.getDate()+t);
-  R.push({dt:dt,w:fromApi(DS[0],t),per:DS.map(function(d,i){return score(Object.assign(fromApi(d,t),SA&&SA[i]||{},MI||{}),+$("hb").value,+$("fc").value,dt.getMonth()+1,dt.getDate())})})}
- draw();showChart();pop()}
-function ftag(t){var v=DS[0].daily.temperature_2m_min[14+t],hf=R[t].w.tmin14;return isFinite(hf)&&hf<=-4?' <small style="color:#b3261e">Saisonende?</small>':(v!=null&&v<0?' <small style="color:#2a6fb0">'+Math.round(v)+'°</small>':'')}
-function frostLine(d){if(!d.tn)return"Frost: keine Daten.";var f=null,hd=null,td=new Date(),fm=function(i,v){var x=new Date();x.setDate(x.getDate()+i-45);return x.toLocaleDateString("de-CH",{day:"numeric",month:"short"})+" ("+Math.round(v)+" °C"+(i>45?", Prognose":"")+")"},s=new Date().getFullYear()+"-09-01";
- for(var i=0;i<d.tn.length;i++){var v=d.tn[i],x=new Date();x.setDate(x.getDate()+i-45);if(v==null||x<new Date(s))continue;if(v<0&&f==null)f=fm(i,v);if(v<=-4&&hd==null)hd=fm(i,v)}
- return"Frost seit 1. Sep: erster unter 0 °C: "+(f||"keiner (bis +7 Tage)")+" · harter Frost (≤ −4 °C): "+(hd||"keiner")+". Nach hartem Frost endet die Saison für die meisten Sommer- und Herbstarten oft (Annahme)."}
-function A(t,i){var v=R[t].per.map(function(p){return p[i].sc});return{a:Math.round(avg(v)),lo:Math.min.apply(null,v),hi:Math.max.apply(null,v)}}
-function draw(){
- var r=R[sel],w=r.w,al=DS.map(function(d){return d.el!=null?d.el:d.elevation});
- var tb='<table><tr><th></th>'+S.map(function(s){return'<th>'+s.k+'</th>'}).join("")+'</tr>'+R.map(function(x,t){
-  return'<tr data-t="'+t+'"'+(t==sel?' class="on"':'')+'><td>'+(t?x.dt.toLocaleDateString("de-CH",{weekday:"short",day:"numeric",month:"numeric"}):"Heute")+ftag(t)+'</td>'+S.map(function(s,i){var a=A(t,i).a;return'<td style="background:hsl(95 45% '+(96-.34*a)+'%)">'+a+'</td>'}).join("")+'</tr>'}).join("")+'</table>';
- var ord=S.map(function(s,i){return i}).sort(function(a,b){return A(sel,b).a-A(sel,a).a});
- $("out").innerHTML='<small>Prognose 8 Tage, Ø über Standort + 4 Punkte im 1-km-Umkreis (Höhe '+Math.round(Math.min.apply(null,al))+'–'+Math.round(Math.max.apply(null,al))+' m)'+(SA&&SA[0]?', Hang '+Math.round(SA[0].sl)+'° nach '+dn(SA[0].as):'')+'. Tippe auf einen Tag. '+icn()+(MI?' Umkreis 1 km: Moor '+Math.round(MI.moor*100)+' %, Gewässer '+Math.round(MI.wat*100)+' %.':'')+'</small>'+tb+'<small>'+frostLine(DS[0])+'</small>'+
-  '<small>'+(sel?r.dt.toLocaleDateString("de-CH",{weekday:"long",day:"numeric",month:"numeric"}):"Heute")+': Nettoregen Tage 4–14 '+w.net.toFixed(0)+' mm · Boden '+w.t7.toFixed(1)+' °C · Feuchte '+(w.m1*100).toFixed(0)+' Vol.% · Tmin '+w.tmin.toFixed(0)+' °C'+(isFinite(w.p26)?' · Regen 26 Tage '+w.p26.toFixed(0)+' mm':'')+'</small>'+
-  ord.map(function(i){var x=r.per[0][i],a=A(sel,i);return'<div class="r"><span>'+x.n+'</span><span>'+a.a+(a.lo!=a.hi?' <small>('+a.lo+'–'+a.hi+')</small>':'')+'</span></div><div class="b"><i style="width:'+a.a+'%"></i></div><small>'+(x.min<.3?'Bremse: '+x.weak+' ('+x.min.toFixed(2)+')':'Wetter '+x.f.wx.toFixed(2)+' (Regen '+x.f.r.toFixed(2)+', Boden-°C '+x.f.T.toFixed(2)+', Feuchte '+x.f.M.toFixed(2)+(x.f.r26!=null?', 26-Tage-Regen '+x.f.r26.toFixed(2):'')+(x.f.rdf!=null?', Regentage '+x.f.rdf.toFixed(2):'')+(x.f.t20!=null?', 20-Tage-Temp. '+x.f.t20.toFixed(2):'')+')')+'</small>'}).join("")+
-  '<p><small>Schwellen nach <a href="https://sporensuche.de/blog/wann-wachsen-pilze/" target="_blank">Sporensuche</a> (Deutschland, für die Schweiz nicht geprüft). Prognose = Modellwetter, unsicher. Funde: <a href="https://swissfungi.wsl.ch" target="_blank">SwissFungi</a> · Wetter: Open-Meteo · © swisstopo</small></p>'}
-function analyse(lat,lng){
- LP=[lat,lng];SA=null;MI=null;$("panel").hidden=false;$("set").hidden=true;$("gb").hidden=true;if($("hm").textContent=="Tippe auf die Karte")$("hm").textContent="";var c=[lat,lng];if(mk)mk.setLatLng(c);else mk=L.marker(c).addTo(map);panDown(c);
- if(ci)ci.setLatLng(c);else ci=L.circle(c,{radius:1000,color:"#4f7a2e",weight:2,fillOpacity:.1}).addTo(map);
- $("out").innerHTML="<small>Lade Wetterdaten …</small>";
- var r0=[+lat.toFixed(2),+lng.toFixed(2)],pts=[r0,[r0[0]+.01,r0[1]],[r0[0],r0[1]+.01],[r0[0]-.01,r0[1]],[r0[0],r0[1]-.01]];
- omGet("m",pts,U,0)
- .then(function(ds){return withIcon(ds,pts)}).then(function(ds){return withP(ds,pts)}).then(function(ds){var la=pts.map(function(p){return p[0]}),ln=pts.map(function(p){return p[1]});pts.forEach(function(p){var dy=200/110540,dx=200/(111320*Math.cos(p[0]*Math.PI/180));la.push(p[0]+dy,p[0],p[0]-dy,p[0]);ln.push(p[1],p[1]+dx,p[1],p[1]-dx)});return elev(la,ln).then(function(el){SA=null;if(el){ds.forEach(function(d,i){d.el=el[i]});SA=pts.map(function(p,i){return sla(el[5+4*i],el[6+4*i],el[7+4*i],el[8+4*i],200,200)})}return ds})}).then(function(ds){return Promise.all([forestAt(lat,lng,MOOR,1),forestAt(lat,lng,WATER,1)]).then(function(r){MI=r[0]==null&&r[1]==null?null:{moor:r[0]||0,wat:r[1]||0};return ds})}).then(function(ds){DS=ds;sel=0;compute()}).catch(function(e){$("out").innerHTML="<small>Fehler: "+e.message+"</small>"})}
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var msg = function (t) { $("msg").textContent = t || ""; };
 
-var DV="&daily=precipitation_sum,et0_fao_evapotranspiration,temperature_2m_max,temperature_2m_min&hourly=soil_temperature_6cm,soil_temperature_18cm,soil_moisture_3_to_9cm,soil_moisture_9_to_27cm,vapour_pressure_deficit,snow_depth",ICN=0;
-function jf(u,n){n=n||0;return fetch(u).then(function(r){if(r.status==429&&n<2)return new Promise(function(ok){setTimeout(ok,2500*(n+1))}).then(function(){return jf(u,n+1)});if(!r.ok)throw new Error(r.status==429?"Zu viele Anfragen bei Open-Meteo (Limit). Bitte 1–2 Minuten warten und nochmal versuchen.":"HTTP "+r.status);return r.json()})}
-function U(la,ln){return"https://api.open-meteo.com/v1/forecast?latitude="+la.join(",")+"&longitude="+ln.join(",")+"&past_days=14&forecast_days=8&timezone=auto"+DV}
-var OC={},TTL=600000;
-function ok2(k,p){return k+":"+p[0].toFixed(2)+","+p[1].toFixed(2)}
-function lsg(k){try{var s=localStorage.getItem("om:"+k);if(!s)return null;var o=JSON.parse(s);if(Date.now()-o.t<TTL)return o;localStorage.removeItem("om:"+k)}catch(e){}return null}
-function lss(k,o){try{var s=JSON.stringify(o);if(s.length<120000)localStorage.setItem("om:"+k,s)}catch(e){}}
-try{Object.keys(localStorage).forEach(function(k){if(k.indexOf("om:")==0)lsg(k.slice(3))})}catch(e){}
-function omGet(kind,pts,build,tries){var now=Date.now(),keys=pts.map(function(p){return ok2(kind,p)}),need=[],seen={};
- keys.forEach(function(k,i){var c=OC[k];if(!c||now-c.t>TTL){c=lsg(k);if(c)OC[k]=c;else delete OC[k]}if(!c&&!seen[k]){seen[k]=1;need.push(i)}});
- var pr=Promise.resolve();
- if(need.length)pr=jf(build(need.map(function(i){return+pts[i][0].toFixed(2)}),need.map(function(i){return+pts[i][1].toFixed(2)})),tries).then(function(j){var a=Array.isArray(j)?j:[j];if(a.length!=need.length)throw new Error("Antwortformat unerwartet");need.forEach(function(i,n){var o={t:Date.now(),d:a[n]};OC[keys[i]]=o;if(pts.length<=8)lss(keys[i],o)})});
- return pr.then(function(){return keys.map(function(k){return OC[k].d})})}
-function UI(la,ln){return"https://api.open-meteo.com/v1/forecast?latitude="+la.join(",")+"&longitude="+ln.join(",")+"&models=meteoswiss_icon_seamless&past_days=14&forecast_days=8&timezone=auto&daily=precipitation_sum,temperature_2m_max,temperature_2m_min"}
-function UP(la,ln){return"https://api.open-meteo.com/v1/forecast?latitude="+la.join(",")+"&longitude="+ln.join(",")+"&past_days=45&forecast_days=8&timezone=auto&daily=precipitation_sum,temperature_2m_min,temperature_2m_mean"}
-function withP(ds,pts){return omGet("p",pts,UP,1).then(function(a){ds.forEach(function(d,i){d.pd=a[i].daily.precipitation_sum;d.tn=a[i].daily.temperature_2m_min;d.tm=a[i].daily.temperature_2m_mean});return ds}).catch(function(){return ds})}
-function icn(){return ICN>0?"Regen/Temp: MeteoSchweiz ICON ("+ICN+" Tageswerte).":"Regen/Temp: Standardmodell."}
-function merge(d,c){var ix={},n=0;c.daily.time.forEach(function(t,i){ix[t]=i});
- ["precipitation_sum","temperature_2m_max","temperature_2m_min"].forEach(function(k){d.daily.time.forEach(function(t,i){var j=ix[t];if(j!=null&&c.daily[k]&&c.daily[k][j]!=null){d.daily[k][i]=c.daily[k][j];if(k=="precipitation_sum")n++}})});return n}
-function withIcon(ds,pts){ICN=-1;return omGet("i",pts,UI,2).then(function(a){var n=0;ds.forEach(function(d,i){n+=merge(d,a[i])});ICN=n;return ds}).catch(function(){ICN=-1;return ds})}
-var wk=L.tileLayer.wms("https://wms.geo.admin.ch/",{layers:"ch.bafu.landesforstinventar-waldmischungsgrad",format:"image/png",transparent:true,version:"1.3.0",opacity:.6,attribution:"© BAFU"}),HL=L.layerGroup().addTo(map);
-$("wl").onchange=function(){if(this.checked)wk.addTo(map);else map.removeLayer(wk)};
-S.forEach(function(s,i){$("hs").add(new Option(s.n,i))});
-for(var q=0;q<=7;q++){var dd=new Date();dd.setDate(dd.getDate()+q);$("hd").add(new Option(q?dd.toLocaleDateString("de-CH",{weekday:"short",day:"numeric",month:"numeric"}):"Heute",q))}
-$("hc").onclick=function(){HL.clearLayers();$("hm").textContent=""};
-var G=40,C=7,OV=4,LAPSE=.0065,FLD=["net","bal","t7","t14","m1","m2","tmin","tmax","snow","vpd","alt","p26","tmin14","rd","tm20"];
-function bil(g,u,v){u=Math.max(0,Math.min(C-1,u));v=Math.max(0,Math.min(C-1,v));var i=Math.min(C-2,Math.floor(u)),j=Math.min(C-2,Math.floor(v)),a=u-i,b=v-j;
- return g[i*C+j]*(1-a)*(1-b)+g[i*C+j+1]*(1-a)*b+g[(i+1)*C+j]*a*(1-b)+g[(i+1)*C+j+1]*a*b}
-function elev(la,ln){var ch=[];for(var i=0;i<la.length;i+=100)ch.push(jf("https://api.open-meteo.com/v1/elevation?latitude="+la.slice(i,i+100).join(",")+"&longitude="+ln.slice(i,i+100).join(","),1).then(function(j){return j.elevation}));
- return Promise.all(ch).then(function(a){return[].concat.apply([],a)}).catch(function(){return null})}
-function forest(b,ly,rel){return new Promise(function(res){var n=G*OV,im=new Image();im.crossOrigin="anonymous";
- im.onload=function(){try{var c=document.createElement("canvas");c.width=c.height=n;var x=c.getContext("2d");x.drawImage(im,0,0);var d=x.getImageData(0,0,n,n).data,f=[],t=0,i,j,a,e,s;
-  for(i=0;i<G;i++)for(j=0;j<G;j++){s=0;for(a=0;a<OV;a++)for(e=0;e<OV;e++)if(d[((i*OV+a)*n+j*OV+e)*4+3]>40)s++;f.push(s/(OV*OV));t+=s}
-  var q=t/(n*n);res((rel===false?q<.97:q>.03&&q<.97)?f:null)}catch(e){res(null)}};
- im.onerror=function(){res(null)};
- im.src="https://wms.geo.admin.ch/?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS="+(ly||"ch.bafu.landesforstinventar-waldmischungsgrad")+"&STYLES=&CRS=EPSG:4326&BBOX="+[b.getSouth(),b.getWest(),b.getNorth(),b.getEast()].join(",")+"&WIDTH="+n+"&HEIGHT="+n+"&FORMAT=image/png&TRANSPARENT=TRUE"})}
-var HC=null;
-function heatDraw(){var ds=HC.ds,el=HC.el,fm=HC.fm,b=HC.b,t=+$("hd").value,sp=+$("hs").value,dt=new Date(),n=0,FA={},i,j;dt.setDate(dt.getDate()+t);
- var W=ds.map(function(d){return fromApi(d,t)});FLD.forEach(function(k){FA[k]=W.map(function(x){return x[k]})});
- var cv=document.createElement("canvas");cv.width=cv.height=G;var cx=cv.getContext("2d"),im=cx.createImageData(G,G);
- var mx=(b.getEast()-b.getWest())/G*111320*Math.cos((b.getNorth()+b.getSouth())/2*Math.PI/180),my=(b.getNorth()-b.getSouth())/G*110540,nb=function(a,i,j){var s=0,c=0;for(var y=-1;y<=1;y++)for(var z=-1;z<=1;z++){var ii=i+y,jj=j+z;if(ii>=0&&ii<G&&jj>=0&&jj<G){s+=a[ii*G+jj];c++}}return s/c},gi=function(a,c){return el[Math.max(0,Math.min(G-1,a))*G+Math.max(0,Math.min(G-1,c))]};
- for(i=0;i<G;i++)for(j=0;j<G;j++){var k=i*G+j,u=(i+.5)*C/G-.5,v=(j+.5)*C/G-.5,w={};FLD.forEach(function(f){w[f]=bil(FA[f],u,v)});
-  var al=el&&el[k]!=null?el[k]:null;if(al!=null){var dT=-LAPSE*(al-w.alt);w.t7+=dT;w.t14+=dT;w.tmin+=dT;w.tmax+=dT;if(isFinite(w.tmin14))w.tmin14+=dT;if(isFinite(w.tm20))w.tm20+=dT;w.alt=al}
-  if(el){var o=sla(gi(i-1,j),gi(i,j+1),gi(i+1,j),gi(i,j-1),mx,my);if(isFinite(o.sl)){w.sl=o.sl;w.as=o.as}}
-  if(HC.mo)w.moor=nb(HC.mo,i,j);if(HC.wa)w.wat=nb(HC.wa,i,j);
-  var s=score(w,+$("hb").value,+$("fc").value,dt.getMonth()+1,dt.getDate())[sp].sc;if(fm)s=Math.round(s*Math.min(1,fm[k]*2));
-  if(s>=10){n++;im.data.set([87,155,39,Math.round(255*Math.min(.8,.15+s/130))],k*4)}}
- cx.putImageData(im,0,0);HL.clearLayers();L.imageOverlay(cv.toDataURL(),b,{interactive:false,className:"hm"}).addTo(HL);
- $("hm").textContent=S[sp].n+", "+(t?dt.toLocaleDateString("de-CH",{weekday:"short",day:"numeric",month:"numeric"}):"heute")+": "+n+" von "+G*G+" Zellen ≥10 (dunkler = besser). Höhe: "+(el?"90-m-Modell":"nur interpoliert")+", Wald: "+(fm?"ja":"nicht verfügbar")+", Moor/Wasser: "+(HC.mo||HC.wa?"ja":"nicht verfügbar")+". "+icn()}
-$("hg").onclick=function(){
- if(map.getZoom()<9){$("hm").textContent="Näher heranzoomen (ab Zoom 9, für feine Details ab 11).";return}
- var b=map.getBounds(),N=b.getNorth(),S0=b.getSouth(),E=b.getEast(),W0=b.getWest(),key=[N,S0,E,W0].map(function(x){return x.toFixed(4)}).join(),pts=[],fl=[],fn=[],i,j;
- if(HC&&HC.key==key){heatDraw();return}
- for(i=0;i<C;i++)for(j=0;j<C;j++)pts.push([N-(i+.5)*(N-S0)/C,W0+(j+.5)*(E-W0)/C]);
- for(i=0;i<G;i++)for(j=0;j<G;j++){fl.push(+(N-(i+.5)*(N-S0)/G).toFixed(4));fn.push(+(W0+(j+.5)*(E-W0)/G).toFixed(4))}
- $("hm").textContent="Lade Wetter …";
- omGet("m",pts,U,0).then(function(ds){return withIcon(ds,pts)}).then(function(ds){return withP(ds,pts)})
- .then(function(ds){$("hm").textContent="Lade Höhe und Wald …";return Promise.all([ds,elev(fl,fn),forest(b),forest(b,MOOR,false),forest(b,WATER,false)])})
- .then(function(r){HC={key:key,b:b,ds:r[0],el:r[1],fm:r[2],mo:r[3],wa:r[4]};heatDraw()})
- .catch(function(e){$("hm").textContent="Fehler: "+(e.message||"Abfrage")})};
-["hs","hd"].forEach(function(id){$(id).addEventListener("change",function(){if(HC)heatDraw()})});
+  // Skala zeichnen
+  var ticks = "";
+  for (var i = 0; i < 72; i++) {
+    var long = i % 6 === 0, a = i * 5 * Math.PI / 180;
+    var r1 = long ? 56 : 62, r2 = 68;
+    if (i === 0) continue;
+    ticks += '<line x1="' + (Math.sin(a) * r1).toFixed(2) + '" y1="' + (-Math.cos(a) * r1).toFixed(2) +
+      '" x2="' + (Math.sin(a) * r2).toFixed(2) + '" y2="' + (-Math.cos(a) * r2).toFixed(2) +
+      '" stroke="var(--muted)" stroke-width="' + (long ? 1.6 : 0.8) + '"/>';
+  }
+  $("ticks").innerHTML = ticks;
 
-$("hm").textContent="Tippe auf die Karte";
-function panDown(c){var p=map.latLngToContainerPoint(c);if(p.y>innerHeight*.5)map.panBy([0,p.y-innerHeight*.28])}
-function pop(){if(!mk||!R)return;var t=S.map(function(s,i){return[s.n,A(0,i).a]}).sort(function(a,b){return b[1]-a[1]}).slice(0,3).map(function(x){return x[0]+" "+x[1]}).join(" · ");mk.bindPopup("<b>Heute</b><br>"+t,{closeButton:false,autoPan:false}).openPopup()}
-function tog(id){var o=!$(id).hidden;["gb","set"].forEach(function(x){$(x).hidden=true});$("panel").hidden=true;if(!o)$(id).hidden=false;else if(id=="set"&&DS)$("panel").hidden=false}
-$("tg").onclick=$("gc").onclick=function(){tog("gb")};function mh(c){var t=document.createElement("div");t.style.cssText="position:fixed;left:0;top:0;width:1px;visibility:hidden;height:"+c;document.body.appendChild(t);var x=t.offsetHeight;document.body.removeChild(t);return x}
-function extGap(){var v;try{v=localStorage.getItem("pilzext")}catch(e){}v=v||"auto";var b=innerHeight,H=b;
- if(v=="auto")H=navigator.standalone?Math.max(b,screen.height):b;else if(v=="lvh")H=mh("100lvh");else if(v=="fill")H=mh("-webkit-fill-available");else if(v=="screen")H=screen.height;else if(v=="p60")H=b+60;
- var e=Math.max(0,Math.min(150,H-b));document.documentElement.style.setProperty("--ext",e+"px");try{$("ex2").value=v}catch(x){}return e}
-function lay(){var v="a",c="#efece3";try{v=localStorage.getItem("pilzlay")||"a";c=localStorage.getItem("pilzbg")||c}catch(e){}var r=document.documentElement;r.className=v=="a"?"":"l"+v;r.style.setProperty("--bg",c);var m=document.querySelector("meta[name=theme-color]");if(m)m.content=c;try{$("lay").value=v;$("bgc").value=c}catch(e){}setTimeout(function(){map.invalidateSize()},50)}
-$("lay").onchange=function(){try{localStorage.setItem("pilzlay",this.value)}catch(e){}lay()};$("bgc").onchange=function(){try{localStorage.setItem("pilzbg",this.value)}catch(e){}lay()};lay();
-$("ex2").onchange=function(){try{localStorage.setItem("pilzext",this.value)}catch(e){}extGap();map.invalidateSize();$("dbg").textContent="Verlängerung: "+extGap()+" px (Modus "+this.value+")"};
-["load","resize","orientationchange"].forEach(function(ev){window.addEventListener(ev,function(){extGap()})});extGap();
-$("ts").onclick=$("sc").onclick=function(){tog("set");var s=document.createElement("div");s.style.cssText="position:fixed;visibility:hidden;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)";document.body.appendChild(s);var cs=getComputedStyle(s),t=parseInt(cs.paddingTop)||0,b=parseInt(cs.paddingBottom)||0;document.body.removeChild(s);$("dbg").textContent="Anzeige: "+(navigator.standalone?"Home-Bildschirm-App":"Browser")+" · Fenster "+innerWidth+"×"+innerHeight+(window.visualViewport?" (sichtbar "+Math.round(visualViewport.height)+")":"")+" · Rand oben "+t+" px, unten "+b+" px · Bildschirm "+screen.height+" · vh "+mh("100vh")+" lvh "+mh("100lvh")+" dvh "+mh("100dvh")+" fill "+mh("-webkit-fill-available")+" · Verlängerung "+extGap()+" px"};$("pc").onclick=function(){$("panel").hidden=true};
-document.querySelectorAll(".sh header").forEach(function(h){h.onclick=function(e){if(!e.target.closest("button"))h.parentNode.classList.toggle("big")}});
-var MOOR="ch.bafu.bundesinventare-hochmoore,ch.bafu.bundesinventare-flachmoore",WATER="ch.swisstopo.swisstlm3d-gewaessernetz",MI=null,LP=null,SA=null,CH=false,HCb={},BD=null;
-function showChart(){$("cht").innerHTML=CH&&DS?chart(DS[0]):""}
-function chart(d){var P=d.daily.precipitation_sum,n=P.length,T=[],k,i;for(k=0;k<n;k++){var s=0,c=0;for(i=k*24;i<k*24+24;i++){var v=d.hourly.soil_temperature_6cm[i];if(v!=null){s+=v;c++}}T.push(c?s/c:null)}
- var mx=Math.max.apply(null,P.map(function(v){return v||0}).concat([5])),pm=mx<=10?Math.ceil(mx):Math.ceil(mx/5)*5,tv=T.filter(function(v){return v!=null}),t0=Math.floor(Math.min.apply(null,tv)),t1=Math.ceil(Math.max.apply(null,tv));if(t1-t0<4)t1=t0+4;
- var L=32,Rm=32,W=340,pw=W-L-Rm,bw=pw/n,X=function(i){return L+i*bw+bw/2},Y=function(v){return 14+100*(1-(v-t0)/(t1-t0))},PY=function(v){return 114-v/pm*60},g="",tx="";
- [0,.5,1].forEach(function(f){var pv=pm*f,y=PY(pv),tt=t0+(t1-t0)*f,ty=Y(tt);g+='<line x1="'+L+'" y1="'+y+'" x2="'+(W-Rm)+'" y2="'+y+'" stroke="#e3e0d6"/>';
-  tx+='<text x="'+(L-4)+'" y="'+(y+3)+'" font-size="9" text-anchor="end" fill="#3b78a8">'+(Math.round(pv*10)/10)+'</text><text x="'+(W-Rm+4)+'" y="'+(ty+3)+'" font-size="9" fill="#b3441f">'+(Math.round(tt*10)/10)+'</text>'});
- return'<svg viewBox="0 0 340 140" width="100%"><rect x="'+(L+14*bw)+'" y="14" width="'+(8*bw)+'" height="100" fill="#eef3e6"/>'+g+P.map(function(v,i){var hh=(v||0)/pm*60;return'<rect x="'+(L+i*bw+2)+'" y="'+(114-hh)+'" width="'+(bw-4)+'" height="'+hh+'" fill="#6aa5d8"/>'}).join("")+
- '<polyline fill="none" stroke="#c4552b" stroke-width="2" points="'+T.map(function(v,i){return v==null?"":X(i)+","+Y(v)}).join(" ")+'"/><line x1="'+(L+14*bw)+'" y1="14" x2="'+(L+14*bw)+'" y2="114" stroke="#22301c" stroke-dasharray="3"/>'+tx+
- '<text x="'+(L-4)+'" y="9" font-size="9" text-anchor="end" fill="#3b78a8" font-weight="700">mm</text><text x="'+(W-Rm+4)+'" y="9" font-size="9" fill="#b3441f" font-weight="700">°C</text>'+
- '<text x="'+L+'" y="128" font-size="9">−14 Tage</text><text x="'+(L+14*bw-12)+'" y="128" font-size="9">heute</text><text x="'+(W-Rm)+'" y="128" font-size="9" text-anchor="end">+7 Tage</text></svg><small><span style="color:#3b78a8">■ Niederschlag in mm pro Tag</span> (Skala links, bis '+pm+' mm) · <span style="color:#b3441f">— Bodentemperatur in 6 cm Tiefe, Tagesmittel in °C</span> (Skala rechts, '+t0+' bis '+t1+' °C) · grün hinterlegt: Prognose</small>'}
-$("vg").onclick=function(){CH=!CH;showChart()};
-var ml=L.tileLayer.wms("https://wms.geo.admin.ch/",{layers:MOOR,format:"image/png",transparent:true,version:"1.3.0",opacity:.7,attribution:"© BAFU"});
-$("mo").onchange=function(){if(this.checked)ml.addTo(map);else map.removeLayer(ml)};
-$("mi").onchange=function(){MICRO=this.checked;if(DS)compute();if(HC)heatDraw()};
-$("ex").onchange=function(){EXPO=this.checked;if(DS)compute();if(HC)heatDraw()};
-// ---- Fundlog
-var LG=L.layerGroup().addTo(map);
-function LS(){try{return JSON.parse(localStorage.getItem("pilzlog")||"[]")}catch(e){return[]}}
-function SV(a){try{localStorage.setItem("pilzlog",JSON.stringify(a))}catch(e){}}
-function logHtml(){var a=LS().slice().reverse(),f=a.filter(function(x){return x.res=="gefunden"&&x.sc!=null}),g=a.filter(function(x){return x.res!="gefunden"&&x.sc!=null}),m=function(l){return l.length?Math.round(avg(l.map(function(x){return x.sc}))):"–"};
- return'<h2>Fundlog</h2><p><small>Speichert nur auf diesem Gerät. Gespeichert wird am zuletzt angetippten Punkt, bei Datum heute mit dem Modellwert. Trage auch «nichts gefunden» ein, das macht die Prüfung aussagekräftig.</small></p><p><select id="la">'+S.map(function(s){return'<option>'+s.n+'</option>'}).join("")+'<option>andere</option></select> <select id="lr"><option>gefunden</option><option>nichts gefunden</option></select> <input type="date" id="ld" value="'+new Date().toISOString().slice(0,10)+'"><br><input id="ln" placeholder="Notiz (Menge, Baum …)" style="width:100%;box-sizing:border-box;margin:4px 0"><button id="ls">Am markierten Punkt speichern</button> <button id="lx">CSV</button> <button id="lm">Auf Karte</button></p><p id="lt"><small>'+(a.length?'Modellwert: gefunden Ø '+m(f)+' (n='+f.length+'), nichts gefunden Ø '+m(g)+' (n='+g.length+')':'Noch keine Einträge.')+'</small></p>'+
- a.map(function(x){return'<p>'+x.d+' · '+x.art+' · '+x.res+(x.sc!=null?' · Modell '+x.sc:'')+' · '+x.lat.toFixed(3)+', '+x.lng.toFixed(3)+(x.n?' · '+x.n:'')+' <button data-d="'+x.id+'">✕</button></p>'}).join("")}
-$("lg").onclick=function(){$("fb").innerHTML=logHtml();$("flog").hidden=false};$("lc").onclick=function(){$("flog").hidden=true};
-$("flog").onclick=function(e){var id=e.target.id,a=LS();
- if(e.target.dataset.d){SV(a.filter(function(x){return x.id!=e.target.dataset.d}));$("fb").innerHTML=logHtml()}
- else if(id=="ls"){if(!LP||!R){$("lt").textContent="Tippe zuerst auf die Karte, dann nochmal speichern.";return}
-  var d=$("ld").value,art=$("la").value,si=S.map(function(s){return s.n}).indexOf(art),today=d==new Date().toISOString().slice(0,10),w=R[0].w,sa=SA&&SA[0]||{};
-  a.push({id:String(Date.now()),d:d,res:$("lr").value,art:art,n:$("ln").value,lat:LP[0],lng:LP[1],sc:today&&si>=0?R[0].per[0][si].sc:null,w:today?{net:+w.net.toFixed(1),p26:isFinite(w.p26)?Math.round(w.p26):null,t7:+w.t7.toFixed(1),m1:+w.m1.toFixed(3),tmin:+w.tmin.toFixed(1),alt:Math.round(w.alt),sl:sa.sl!=null?Math.round(sa.sl):null,as:sa.as!=null?Math.round(sa.as):null}:null});SV(a);$("fb").innerHTML=logHtml()}
- else if(id=="lx"){var c="Datum;Ergebnis;Art;Lat;Lng;Modellwert;Notiz;Nettoregen;Regen26;Bodentemp;Feuchte;Tmin;Hoehe;Hang;Richtung\n"+a.map(function(x){var w=x.w||{};return[x.d,x.res,x.art,x.lat,x.lng,x.sc,'"'+(x.n||"").replace(/"/g,"'")+'"',w.net,w.p26,w.t7,w.m1,w.tmin,w.alt,w.sl,w.as].map(function(v){return v==null?"":v}).join(";")}).join("\n"),l=document.createElement("a");l.href=URL.createObjectURL(new Blob([c],{type:"text/csv"}));l.download="pilzlog.csv";l.click()}
- else if(id=="lm"){LG.clearLayers();a.forEach(function(x){L.circleMarker([x.lat,x.lng],{radius:7,color:x.res=="gefunden"?"#2a7a2a":"#a33"}).bindPopup(x.d+" "+x.art+" ("+x.res+")").addTo(LG)});$("flog").hidden=true}};
-// ---- Beste Stellen (Steinpilz, Mischwald, 10/50/100/150 km)
-function forestAt(la,ln,ly,km){return new Promise(function(res){var im=new Image(),d=(km||.5)/110.54,e=(km||.5)/(111.32*Math.cos(la*Math.PI/180));im.crossOrigin="anonymous";
- im.onload=function(){try{var c=document.createElement("canvas");c.width=c.height=24;var x=c.getContext("2d");x.drawImage(im,0,0);var D=x.getImageData(0,0,24,24).data,s=0;for(var i=0;i<576;i++)if(D[i*4+3]>40)s++;res(s/576)}catch(er){res(null)}};im.onerror=function(){res(null)};
- im.src="https://wms.geo.admin.ch/?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS="+(ly||"ch.bafu.landesforstinventar-waldmischungsgrad")+"&STYLES=&CRS=EPSG:4326&BBOX="+[la-d,ln-e,la+d,ln+e].join(",")+"&WIDTH=24&HEIGHT=24&FORMAT=image/png&TRANSPARENT=TRUE"})}
-$("bc").onclick=function(){$("best").hidden=true};
-$("bs").onclick=function(){$("best").hidden=false;if(!LP){$("bb").innerHTML="<p>Tippe zuerst auf die Karte (oder nutze den Standort-Button) und öffne dies dann nochmal.</p>";return}bestRun(LP)};
-function forestGrid(la,ln,km,n){return new Promise(function(res){var im=new Image(),d=km/110.54,e=km/(111.32*Math.cos(la*Math.PI/180)),s=n*4;im.crossOrigin="anonymous";
- im.onload=function(){try{var c=document.createElement("canvas");c.width=c.height=s;var x=c.getContext("2d");x.drawImage(im,0,0);var D=x.getImageData(0,0,s,s).data,f=[],i,j,a,b,q;for(i=0;i<n;i++)for(j=0;j<n;j++){q=0;for(a=0;a<4;a++)for(b=0;b<4;b++)if(D[((i*4+a)*s+j*4+b)*4+3]>40)q++;f.push(q/16)}res(f)}catch(er){res(null)}};im.onerror=function(){res(null)};
- im.src="https://wms.geo.admin.ch/?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=ch.bafu.landesforstinventar-waldmischungsgrad&STYLES=&CRS=EPSG:4326&BBOX="+[la-d,ln-e,la+d,ln+e].join(",")+"&WIDTH="+s+"&HEIGHT="+s+"&FORMAT=image/png&TRANSPARENT=TRUE"})}
-function snap(la,ln){return forestGrid(la,ln,2,8).then(function(f){if(!f)return null;var b=-1,bs=-99,i,y,x,d=2/110.54,e=2/(111.32*Math.cos(la*Math.PI/180));for(i=0;i<64;i++){if(f[i]<.4)continue;y=i>>3;x=i&7;var s=f[i]*10-Math.hypot(y-3.5,x-3.5);if(s>bs){bs=s;b=i}}
- if(b<0)return{f:0};y=b>>3;x=b&7;return{lat:la+d-(y+.5)*d/4,lng:ln-e+(x+.5)*e/4,f:f[b]}})}
-function bestRun(o){var P=[[o[0],o[1],0,0]];[[5,6],[10,8],[25,8],[50,10],[75,8],[100,10],[125,8],[150,12]].forEach(function(c){for(var k=0;k<c[1];k++){var a=2*Math.PI*k/c[1]+c[0]*.37;P.push([o[0]+c[0]*Math.cos(a)/110.54,o[1]+c[0]*Math.sin(a)/(111.32*Math.cos(o[0]*Math.PI/180)),c[0],a])}});
- $("bb").innerHTML="<h2>Beste Stellen</h2><p>Lade Wetter für "+P.length+" Punkte …</p>";
- omGet("m",P,U,0).then(function(ds){return withP(ds,P)}).then(function(ds){
-  var fc=+$("fc").value,hb=+$("hb").value,
-  sc=function(i,t,el){var dt=new Date();dt.setDate(dt.getDate()+t);var w=fromApi(ds[i],t);if(el!=null){var dT=-.0065*(el-w.alt);w.t7+=dT;w.t14+=dT;w.tmin+=dT;w.tmax+=dT;if(isFinite(w.tmin14))w.tmin14+=dT;if(isFinite(w.tm20))w.tm20+=dT;w.alt=el}return score(w,hb,fc,dt.getMonth()+1,dt.getDate())[0].sc},
-  s0=P.map(function(p,i){var r=[];for(var t=0;t<=7;t++)r.push(sc(i,t));return r}),mx=s0.map(function(r){return Math.max.apply(null,r)}),
-  ord=P.map(function(p,i){return i}).filter(function(i){return mx[i]>=20}).sort(function(a,b){return mx[b]-mx[a]}).slice(0,40);
-  $("bb").innerHTML="<h2>Beste Stellen</h2><p>Suche Waldflächen bei "+ord.length+" Kandidaten …</p>";
-  return Promise.all(ord.map(function(i){return snap(P[i][0],P[i][1])})).then(function(sn){
-   var ok=sn.some(function(s){return s&&s.f>0}),cand=[];
-   ord.forEach(function(i,k){var s=sn[k];if(ok){if(s&&s.f>=.4)cand.push({i:i,lat:s.lat,lng:s.lng,f:s.f})}else cand.push({i:i,lat:P[i][0],lng:P[i][1],f:null})});
-   var pr=ok&&cand.length?elev(cand.map(function(c){return c.lat}),cand.map(function(c){return c.lng})):Promise.resolve(null);
-   return pr.then(function(el){cand.forEach(function(c,n){c.el=el&&el[n]!=null?el[n]:null;c.sc=[];for(var t=0;t<=7;t++)c.sc.push(sc(c.i,t,c.el));
-     var dla=(c.lat-o[0])*110.54,dlo=(c.lng-o[1])*111.32*Math.cos(o[0]*Math.PI/180);c.d=Math.hypot(dla,dlo);c.a=(Math.atan2(dlo,dla)+2*Math.PI)%(2*Math.PI)});
-    var M=[10,50,100,150].map(function(km){var r=[];for(var t=0;t<=7;t++){var b={v:0,i:-1};cand.forEach(function(c,n){if(c.d<=km+2.5&&c.sc[t]>b.v)b={v:c.sc[t],i:n}});r.push(b)}return r});
-    BD={P:P,ds:ds,C:cand,M:M,ok:ok};bestDraw(0,0)})})}).catch(function(e){$("bb").innerHTML="<h2>Beste Stellen</h2><p>Fehler: "+(e.message||"Abfrage")+"</p>"})}
-function bestDraw(r,t){var B=BD,km=[10,50,100,150],hd=['<th></th>'];for(var q=0;q<=7;q++){var d=new Date();d.setDate(d.getDate()+q);hd.push('<th>'+(q?d.toLocaleDateString("de-CH",{weekday:"short",day:"numeric"}):"Heute")+'</th>')}
- var tb='<table><tr>'+hd.join("")+'</tr>'+B.M.map(function(row,ri){return'<tr><td>bis '+km[ri]+' km</td>'+row.map(function(c,ti){return'<td data-r="'+ri+'" data-t="'+ti+'" style="background:hsl(95 45% '+(96-.34*c.v)+'%)'+(ri==r&&ti==t?';outline:2px solid #22301c':'')+'">'+c.v+'</td>'}).join("")+'</tr>'}).join("")+'</table>',c=B.M[r][t],p=c.i>=0?B.C[c.i]:null,dd=new Date();dd.setDate(dd.getDate()+t);
- $("bb").innerHTML='<h2>Beste Stellen</h2><p><small>Steinpilz, Lebensraum: '+H[+$("hb").value]+', bester Wert pro Radius und Tag. Tippe auf eine Zelle.</small></p>'+tb+(p?'<p><b>'+dd.toLocaleDateString("de-CH",{weekday:"long",day:"numeric",month:"numeric"})+', bis '+km[r]+' km: Wert '+c.v+'</b><br>'+(p.d>=1?Math.round(p.d)+' km nach '+dn(p.a*180/Math.PI%360):'am Standort')+', '+Math.round(p.el!=null?p.el:B.ds[p.i].elevation)+' m, Wald '+(p.f!=null?Math.round(p.f*100)+' % (500-m-Feld)':'nicht geprüft')+'<br><button id="bg" data-i="'+c.i+'">→ auf Karte zeigen</button></p>':'<p>Keine Stelle mit Wert ≥ 10.</p>')+'<p><small>'+(B.ok?'Die Stellen liegen auf Waldflächen (BAFU-Karte, mindestens 40 % Wald in einem 500-m-Feld, Suche im Umkreis von 2 km um den Wetterpunkt). Städte, Seen und offenes Gelände fallen heraus.':'Achtung: Die Waldkarte war nicht auswertbar. Die Stellen sind nicht auf Wald geprüft und können Siedlungen oder Seen sein.')+' '+B.P.length+' Wetterpunkte, der Abstand zwischen ihnen wächst mit der Entfernung, gute Stellen dazwischen können fehlen. Hang nicht berücksichtigt. Der Lebensraum (Baumart) gilt für alle Orte gleich.</small></p>'}
-$("bb").onclick=function(e){var td=e.target.closest("td");if(td&&td.dataset.t!=null&&BD){bestDraw(+td.dataset.r,+td.dataset.t)}
- if(e.target.id=="bg"){var p=BD.C[+e.target.dataset.i];$("best").hidden=true;map.setView([p.lat,p.lng],12);analyse(p.lat,p.lng)}};
-if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(function(){});
-map.on("click",function(e){analyse(e.latlng.lat,e.latlng.lng)});
-$("out").onclick=function(e){var tr=e.target.closest("tr");if(tr&&tr.dataset.t!=null&&R){sel=+tr.dataset.t;draw()}};
-$("hb").onchange=$("fc").onchange=function(){if(DS)compute();if(HC)heatDraw()};
-$("loc").onclick=function(){navigator.geolocation.getCurrentPosition(function(p){map.setView([p.coords.latitude,p.coords.longitude],13);analyse(p.coords.latitude,p.coords.longitude)},function(){$("out").innerHTML="<small>Standort nicht erlaubt. Tippe auf die Karte.</small>"})};
-</script></body></html>
+  // ---------- Standort, Höhe, Temperatur ----------
+  function getJSON(url) {
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    });
+  }
+
+  function load() {
+    if (!navigator.geolocation) { msg("Dieser Browser unterstützt keine Standortabfrage."); return; }
+    msg("Standort wird abgefragt …");
+    navigator.geolocation.getCurrentPosition(function (pos) {
+      var lat = pos.coords.latitude, lon = pos.coords.longitude;
+      $("place").textContent = lat.toFixed(4) + "° N, " + lon.toFixed(4) + "° O";
+      msg("");
+
+      var gps = pos.coords.altitude;
+      var gpsTxt = gps != null ? "GPS: " + Math.round(gps) + " m" : "";
+
+      getJSON("https://api.open-meteo.com/v1/elevation?latitude=" + lat + "&longitude=" + lon)
+        .then(function (d) {
+          var e = d.elevation && d.elevation[0];
+          $("alt").textContent = Math.round(e) + " m";
+          $("altsub").textContent = gpsTxt ? "Geländemodell · " + gpsTxt : "Geländemodell";
+        })
+        .catch(function () {
+          if (gps != null) { $("alt").textContent = Math.round(gps) + " m"; $("altsub").textContent = "nur GPS"; }
+          else { $("alt").textContent = "–"; $("altsub").textContent = "nicht verfügbar"; }
+        });
+
+      getJSON("https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lon +
+        "&current=temperature_2m,apparent_temperature")
+        .then(function (d) {
+          var c = d.current;
+          $("temp").textContent = Math.round(c.temperature_2m * 10) / 10 + " °C";
+          $("tempsub").textContent = "gefühlt " + Math.round(c.apparent_temperature) + " °C";
+        })
+        .catch(function () { $("temp").textContent = "–"; $("tempsub").textContent = "nicht verfügbar"; });
+    }, function (err) {
+      var t = { 1: "Standortzugriff verweigert. Bitte in den Browser-Einstellungen erlauben.",
+                2: "Standort nicht verfügbar.", 3: "Standortabfrage hat zu lange gedauert." };
+      msg(t[err.code] || "Standortfehler.");
+      $("place").textContent = "Kein Standort";
+    }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 });
+  }
+
+  // ---------- Kompass ----------
+  var names = ["N", "NO", "O", "SO", "S", "SW", "W", "NW"];
+  var listening = false;
+
+  function onOrient(e) {
+    var h = null;
+    if (typeof e.webkitCompassHeading === "number") h = e.webkitCompassHeading;            // iOS
+    else if (e.absolute && e.alpha != null) h = (360 - e.alpha) % 360;                      // Android
+    if (h == null) return;
+    h = (h + 360) % 360;
+    $("dial").style.transform = "rotate(" + (-h) + "deg)";
+    $("deg").textContent = Math.round(h) + "°";
+    $("dir").textContent = names[Math.round(h / 45) % 8];
+  }
+
+  function startCompass() {
+    var start = function () {
+      if (listening) return;
+      listening = true;
+      window.addEventListener("deviceorientationabsolute", onOrient, true);
+      window.addEventListener("deviceorientation", onOrient, true);
+      msg("");
+      $("compassBtn").textContent = "Kompass läuft";
+      setTimeout(function () {
+        if ($("deg").textContent === "–") msg("Keine Kompassdaten. Auf dem Computer gibt es meist keinen Sensor – am Handy öffnen.");
+      }, 2500);
+    };
+    if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function") {
+      DeviceOrientationEvent.requestPermission().then(function (s) {
+        if (s === "granted") start(); else msg("Zugriff auf Bewegungssensoren verweigert.");
+      }).catch(function () { msg("Kompass konnte nicht gestartet werden."); });
+    } else start();
+  }
+
+  $("compassBtn").addEventListener("click", startCompass);
+  $("refreshBtn").addEventListener("click", load);
+  load();
+})();
+</script>
+</body>
+</html>
